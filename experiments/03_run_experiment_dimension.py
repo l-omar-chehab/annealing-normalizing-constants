@@ -24,35 +24,42 @@ all_hyperparams = {}
 
 
 # Experiment: gaussian target
-expe_name = "unnormalization"
+expe_name = "dim_var_diff"
 all_hyperparams[expe_name] = []
+# all_dims = np.linspace(1, 125, 10).astype(int)
+all_dims = np.linspace(1, 100, 10).astype(int)
 all_path_names = ["geometric", "arithmetic", "arithmetic-adaptive", "arithmetic-adaptive-trig"]
-all_target_logZs = np.linspace(-6, 6, 7).astype(int)
-# all_mean_lognorms = [0.]  # np.linspace(1, 4, 3)
+all_losses = ["nce"]
+all_vars = [1. / 4]
 
 # outer loop
-for path_name, target_logZ in product(all_path_names, all_target_logZs):
-    # mean_norm = np.exp(mean_lognorm)
-    mean_norm = 3.
-    target = MultivariateNormal(
-        loc=mean_norm * torch.ones(2) / torch.norm(torch.ones(2)),
-        covariance_matrix=torch.eye(2)
-    )
-    # target_logZ = ((dim / 2) * np.log(2 * np.pi) + (1. / 2) * torch.slogdet(target.covariance_matrix)[1]).item()
-    # target_logZ = 0.
+for dim, path_name, loss, var in product(
+        all_dims, all_path_names, all_losses, all_vars):
     two_step = True if ("adaptive" in path_name) else False
-    hyperparams = {
-        "dim": 2,
-        "n_distributions": 10,
-        "path_name": path_name,
-        # "mean_lognorm": mean_lognorm,
-        "target": target,
-        "target_logZ": target_logZ,
-        "target_logZ_estim": target_logZ,
-        "two_step": two_step,
-        "loss": "nce"
-    }
-    all_hyperparams[expe_name].append(hyperparams)
+    all_n_distributions = [2, 10] if path_name == "arithmetic-adaptive-trig" else [10]
+
+    for n_distributions in all_n_distributions:
+        target = MultivariateNormal(
+            loc=torch.zeros(dim),
+            covariance_matrix=var * torch.eye(dim)
+        )
+        target_logZ = ((dim / 2) * np.log(2 * np.pi) + (1. / 2) * torch.slogdet(target.covariance_matrix)[1]).item()
+        # target_logZ = 0.
+        hyperparams = {
+            "dim": dim,
+            "n_distributions": n_distributions,
+            "path_name": path_name,
+            "target": target,
+            "target_logZ": target_logZ,
+            "target_logZ_estim": target_logZ,
+            "loss": loss,
+            "two_step": two_step,
+            "two_step_n_avg": 1,
+            "two_step_path_name": "geometric",
+            "two_step_n_distributions": 10,
+            "two_step_loss": "nce"
+        }
+        all_hyperparams[expe_name].append(hyperparams)
 
 
 # %%
@@ -76,6 +83,10 @@ for expe_name in expe_names:
         target_logZ_estim = hyperparams["target_logZ_estim"]
         loss = hyperparams["loss"]
         two_step = hyperparams["two_step"]
+        two_step_loss = hyperparams["two_step_loss"]
+        two_step_n_avg = hyperparams["two_step_n_avg"]
+        two_step_path_name = hyperparams["two_step_path_name"]
+        two_step_n_distributions = hyperparams["two_step_n_distributions"]
 
         # Estimation
         beta_hats, error, error_best = annealed_nce_estim(
@@ -90,7 +101,11 @@ for expe_name in expe_names:
             sample_size=SAMPLE_SIZE,
             verbose=VERBOSE,
             loss=loss,
-            two_step=two_step
+            two_step=two_step,
+            two_step_loss=two_step_loss,
+            two_step_n_avg=two_step_n_avg,
+            two_step_path_name=two_step_path_name,
+            two_step_n_distributions=two_step_n_distributions
         )
 
         # Record result
@@ -105,5 +120,3 @@ for expe_name in expe_names:
     torch.save(results, filename)
 
     print(f"Finished experiment {expe_name} in {duration_in_minutes} minutes.")
-
-# %%

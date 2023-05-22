@@ -3,16 +3,13 @@
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import cm
 import pandas as pd
 import torch
-from scipy.interpolate import interp1d
-import seaborn as sns
 
-from annealednce.defaults import RESULTS_FOLDER, IMAGE_FOLDER
+from annealednce.defaults import RESULTS_FOLDER, IMAGE_FOLDER, ROOT_FOLDER
 
 
-plt.style.use("/Users/omar/Downloads/matplotlib_style.txt")
+plt.style.use(ROOT_FOLDER / "matplotlib_style.txt")
 
 FONT = 50
 plt.rcParams.update({
@@ -56,7 +53,6 @@ ax.plot(
     df.loc[sel, "param_distance"], np.log10(df.loc[sel, "error_best"]),
     color="black", label=label,
     lw=20, ls="--",
-    # marker="x", markersize=35, markerfacecolor="white", markeredgewidth=5, markevery=2
 )
 
 

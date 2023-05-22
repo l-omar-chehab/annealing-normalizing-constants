@@ -35,18 +35,12 @@ all_variances = [2.]
 # outer loop
 for dim, n_distributions, path_name, loss, variance in product(
         all_dims, all_n_distributions, all_path_names, all_losses, all_variances):
-    # target = GeneralizedMultivariateNormal(
-    #     means=[0] * dim, variances=[1.] * dim, powers=[power] * dim)
-    target = MultivariateNormal(
-        loc=torch.zeros(dim), covariance_matrix=variance * torch.eye(dim))
-    # target_logZ = ((dim / 2) * np.log(2 * np.pi) + (1. / 2) * torch.slogdet(target.covariance_matrix)[1]).item()
+    target = MultivariateNormal(loc=torch.zeros(dim), covariance_matrix=variance * torch.eye(dim))
     target_logZ = 0.
     hyperparams = {
         "dim": dim,
         "n_distributions": n_distributions,
         "path_name": path_name,
-        # "power": power,
-        # "mean": mean,
         "target": target,
         "target_logZ": target_logZ,
         "target_logZ_estim": target_logZ,

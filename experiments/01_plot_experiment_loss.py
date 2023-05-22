@@ -3,16 +3,14 @@
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import cm
 import pandas as pd
 import torch
-from scipy.interpolate import interp1d
 import seaborn as sns
 
-from annealednce.defaults import RESULTS_FOLDER, IMAGE_FOLDER
+from annealednce.defaults import RESULTS_FOLDER, IMAGE_FOLDER, ROOT_FOLDER
 
 
-plt.style.use("/Users/omar/Downloads/matplotlib_style.txt")
+plt.style.use(ROOT_FOLDER / "matplotlib_style.txt")
 
 plt.rcParams.update({
     "figure.titlesize": 22,
@@ -45,24 +43,13 @@ df = pd.DataFrame({"estimates": estimates, "models": models, "variance": varianc
 # figure
 fig, ax = plt.subplots(figsize=(7.5, 2.7))
 
-# sns.stripplot(
-#     x="estimates", y="models", data=df,
-#     jitter=0.1, ax=ax,
-#     size=2.5,
-#     order=["is", "rev-is", "exp", "nce"]
-# )
 sns.violinplot(
-    x="estimates", y="models", data=df,  # hue="variance",
+    x="estimates", y="models", data=df,
     width=0.5, linewidth=0.5,
     boxprops=dict(alpha=.15),
     ax=ax,
-    order=["is", "rev-is", "nce"],   # "exp"
+    order=["is", "rev-is", "nce"],
     inner=None,
-    # showmeans=True,
-    # meanprops={"marker": "o",
-    #            "markerfacecolor": "white",
-    #            "markeredgecolor": "black",
-    #            "markersize": "10"}
 )
 
 sns.despine(ax=ax)
@@ -72,9 +59,7 @@ ax.axvline(x=truth, color="black", linestyle="--", linewidth=0.5)
 ax.set(
     ylabel="",
     xlabel="Estimates",
-    yticklabels=["IS", "RevIS", "NCE"],  # "IS-RevIS",
-    # xticklabels=[-0.5, 0, 0.5]
-    # ylim=(truth + 0.2, truth - 0.2)
+    yticklabels=["IS", "RevIS", "NCE"]
 )
 ax.set_ylabel("")
 
