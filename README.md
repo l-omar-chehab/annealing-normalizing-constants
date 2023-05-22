@@ -27,15 +27,6 @@ For contributors, install the package using the editable mode
 pip install -e .
 ```
 
-
-```bash
-# for users: install the package
-python setup.py develop
-
-# for contributors: install the package using the editable mode
-pip install -e .
-```
-
 ### Run an example
 
 ```bash
