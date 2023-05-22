@@ -16,14 +16,14 @@ conda activate annealed-nce
 Then, install the package. For users, proceed with a regular installation
 
 ```bash
-# for users: install the package
+# For users: install the package
 python setup.py develop
 ```
 
 For contributors, install the package using the editable mode
 
 ```bash
-# for contributors: install the package using the editable mode
+# For contributors: install the package using the editable mode
 pip install -e .
 ```
 
